@@ -1,0 +1,11 @@
+#uploadFormDiv {
+    width: 30px;
+    color: crimson;
+    height: 600px;
+}
+
+#uploadForm {
+    display: flex;
+    color: crimson;
+    height: 600px;
+}

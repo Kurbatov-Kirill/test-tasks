@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="styles.css">
+    <title>Прогноз погоды</title>
+</head>
+<body>
+
+<div class="container">
+    <div class="search-box">
+        <input type="text" id="cityInput" placeholder="Введите город (напр. Moscow)">
+        <button onclick="getWeather()">Найти</button>
+    </div>
+
+    <div id="error">Город не найден</div>
+
+    <div id="weather-info" class="weather-info">
+        <h2 id="cityName">Город</h2>
+        <div class="temp" id="temp">--°C</div>
+    </div>
+</div>
+
+<script>
+    async function getWeather() {
+        const city = document.getElementById('cityInput').value;
+        const errorDiv = document.getElementById('error');
+        const infoDiv = document.getElementById('weather-info');
+
+        if (!city) return;
+
+        try {
+            const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1&language=ru`);
+            const geoData = await geoRes.json();
+
+            if (!geoData.results) {
+                errorDiv.style.display = 'block';
+                infoDiv.style.display = 'none';
+                return;
+            }
+
+            const { latitude, longitude, name } = geoData.results[0];
+
+            const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m&forecast_hours=24`);
+            const weatherData = await weatherRes.json();
+
+            document.getElementById('cityName').innerText = name;
+            document.getElementById('temp').innerText = Math.round(weatherData.hourly.temperature_2m[0]) + '°C';
+
+            errorDiv.style.display = 'none';
+            infoDiv.style.display = 'block';
+        } catch (err) {
+            console.error(err);
+            alert("Ошибка при получении данных");
+        }
+    }
+</script>
+
+</body>
+</html>

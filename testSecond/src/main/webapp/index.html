@@ -1,56 +1,61 @@
 <html>
 <meta charset="UTF-8">
+<head>
+    <link rel="stylesheet" href="styles.css">
+</head>
 <body>
 <h2>Hello World!</h2>
-<form id="uploadForm">
-    <input type="file" name="fileToUpload" id="fileInput">
-    <button type="submit">Загрузить</button>
-</form>
+    <div id =uploadFormDiv>
+        <form id="uploadForm">
+            <input type="file" name="fileToUpload" id="fileInput">
+            <button type="submit">Загрузить</button>
+        </form>
 
-<div id="status"></div>
-<progress id="progressBar" value="0" max="100" style="display:none;"></progress>
+        <div id="status"></div>
+        <progress id="progressBar" value="0" max="100" style="display:none;"></progress>
 
-<script>
-    const uploadForm = document.getElementById('uploadForm');
-    const status = document.getElementById('status');
-    const progressBar = document.getElementById('progressBar');
+        <script>
+            const uploadForm = document.getElementById('uploadForm');
+            const status = document.getElementById('status');
+            const progressBar = document.getElementById('progressBar');
 
-    uploadForm.onsubmit = async (e) => {
-        e.preventDefault();
+            uploadForm.onsubmit = async (e) => {
+                e.preventDefault();
 
-        const fileInput = document.getElementById('fileInput');
-        if (fileInput.files.length === 0) return alert("Выберите файл!");
+                const fileInput = document.getElementById('fileInput');
+                if (fileInput.files.length === 0) return alert("Выберите файл!");
 
-        const formData = new FormData();
-        formData.append("fileToUpload", fileInput.files[0]);
+                const formData = new FormData();
+                formData.append("fileToUpload", fileInput.files[0]);
 
-        status.innerText = "Загрузка...";
-        progressBar.style.display = "block";
+                status.innerText = "Загрузка...";
+                progressBar.style.display = "block";
 
-        const xhr = new XMLHttpRequest();
+                const xhr = new XMLHttpRequest();
 
-        xhr.upload.onprogress = (event) => {
-            if (event.lengthComputable) {
-                progressBar.value = (event.loaded / event.total) * 100;
-            }
-        };
+                xhr.upload.onprogress = (event) => {
+                    if (event.lengthComputable) {
+                        progressBar.value = (event.loaded / event.total) * 100;
+                    }
+                };
 
-        xhr.onload = () => {
-            if (xhr.status === 200) {
-                const generatedFileName = xhr.responseText.replace("OK: ", "").trim();
-                const downloadUrl = `/download?id=${generatedFileName}`;
+                xhr.onload = () => {
+                    if (xhr.status === 200) {
+                        const generatedFileName = xhr.responseText.replace("OK: ", "").trim();
+                        const downloadUrl = `/download?id=${generatedFileName}`;
 
-                status.innerHTML = `Файл загружен успешно! <br><a href="${downloadUrl}" target="_blank">Скачать файл</a>`;
-                progressBar.value = 100;
-            } else {
-                status.innerText = "Ошибка при загрузке: " + xhr.responseText;
-            }
-        };
+                        status.innerHTML = `Файл загружен успешно! <br><a href="${downloadUrl}" target="_blank">Скачать файл</a>`;
+                        progressBar.value = 100;
+                    } else {
+                        status.innerText = "Ошибка при загрузке: " + xhr.responseText;
+                    }
+                };
 
-        xhr.open("POST", "/upload");
-        xhr.send(formData);
-    };
-</script>
+                xhr.open("POST", "/upload");
+                xhr.send(formData);
+            };
+        </script>
+    </div>
 
 </body>
 </html>

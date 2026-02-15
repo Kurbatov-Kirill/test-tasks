@@ -37,6 +37,12 @@ public class UploadServlet extends HttpServlet {
             filePart.write(uploadPath + File.separator + savedFileName);
 
             response.setStatus(200);
+            //String originalName = filePart.getSubmittedFileName();
+            // Вызываем сохранение в БД
+            DatabaseConfig.saveFileInfo(originalName, savedFileName);
+
+            // Возвращаем сохраненное имя для JavaScript
+            //response.getWriter().write(savedFileName);
             response.getWriter().write(savedFileName);
 
         } catch (Exception e) {

@@ -14,6 +14,8 @@ public class DownloadServlet extends HttpServlet {
         File file = new File(uploadPath + File.separator + fileName);
 
         if (file.exists()) {
+            DatabaseConfig.updateLastDownloadDate(fileName);
+
             response.setContentType(getServletContext().getMimeType(fileName));
             response.setContentLength((int) file.length());
 
