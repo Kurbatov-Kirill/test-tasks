@@ -1,9 +1,24 @@
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class Tube {
+    public Tube() {
+    }
+
+    public Tube(Tube other) {
+        this.volume = other.volume;
+
+        this.contents = new ArrayList<>(other.contents.size());
+        for (Drop drop : other.contents) {
+            this.contents.add(new Drop(drop));
+        }
+    }
+
+    public Tube(int volume, List<Drop> contents) {
+        this.volume = volume;
+        this.contents = contents;
+    }
+
     private int volume;
     private List<Drop> contents = new ArrayList<>();
 
