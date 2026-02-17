@@ -2,6 +2,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Tube {
+    private int volume;
+    private List<Drop> contents = new ArrayList<>();
+
+    /*===========================================*/
+
     public Tube() {
     }
 
@@ -14,13 +19,7 @@ public class Tube {
         }
     }
 
-    public Tube(int volume, List<Drop> contents) {
-        this.volume = volume;
-        this.contents = contents;
-    }
-
-    private int volume;
-    private List<Drop> contents = new ArrayList<>();
+    /*===========================================*/
 
     public int getVolume() {
         return volume;
@@ -39,25 +38,25 @@ public class Tube {
     }
 
     public boolean hasLiquid() {
-        return getContents().size() > 0;
+        return !contents.isEmpty();
     }
 
     public boolean hasFreeSpace() {
-        return getContents().size() < volume;
+        return contents.size() < volume;
     }
 
     public int getFreeCells() {
-        return volume - getContents().size();
+        return volume - contents.size();
     }
 
-    public Drop getTopDrop () {
-        return getContents().getLast();
+    public Drop getTopDrop() {
+        return contents.getLast();
     }
 
     public boolean isContainsOneKindOfLiquid() {
         List<Integer> dropsColorsInTube = new ArrayList<>();
-        for (int i = 0; i < getContents().size(); i++) {
-            dropsColorsInTube.add(getContents().get(i).getColorId());
+        for (Drop content : contents) {
+            dropsColorsInTube.add(content.getColorId());
         }
 
         return (dropsColorsInTube.stream().distinct().count() == 1);

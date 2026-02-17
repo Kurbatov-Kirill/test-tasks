@@ -8,10 +8,6 @@ public class State {
         return currentState;
     }
 
-    public void setCurrentState(List<Tube> currentState) {
-        this.currentState = currentState;
-    }
-
     public State() {
 
     }
