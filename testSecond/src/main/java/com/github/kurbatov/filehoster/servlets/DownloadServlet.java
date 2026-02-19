@@ -1,6 +1,7 @@
 package com.github.kurbatov.filehoster.servlets;
 
 import com.github.kurbatov.filehoster.config.DatabaseConfig;
+import com.github.kurbatov.filehoster.services.StatisticsService;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

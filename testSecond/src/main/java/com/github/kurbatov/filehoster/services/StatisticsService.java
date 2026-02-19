@@ -18,7 +18,7 @@ public class StatisticsService {
     }
 
     // Получить всю стату
-    Stats getStats(String fileId) {
+    public Stats getStats(String fileId) {
         String sql = "SELECT * FROM uploaded_files WHERE (saved_name = ?)";
         Stats stats = new Stats();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
