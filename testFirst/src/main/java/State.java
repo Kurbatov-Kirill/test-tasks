@@ -3,11 +3,7 @@ import java.util.List;
 
 public class State {
     private List<Tube> currentState = new ArrayList<>();
-
-    public List<Tube> getCurrentState() {
-        return currentState;
-    }
-
+    /*===========================================*/
     public State() {
 
     }
@@ -18,5 +14,9 @@ public class State {
         for (Tube tube : other.currentState) {
             this.currentState.add(new Tube(tube));
         }
+    }
+    /*===========================================*/
+    public List<Tube> getCurrentState() {
+        return currentState;
     }
 }

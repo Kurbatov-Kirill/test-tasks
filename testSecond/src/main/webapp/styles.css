@@ -1,26 +1,55 @@
 body {
     background-color: #333333;
+    display: flex;
+    justify-content: center;
+    padding-top: 50px;
+
 }
 
 #mainContainer {
-    display: flex;
-    justify-content: center;
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    width: 400px;
+    height: 200px;
+}
 
+#mainContainerInfo {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    width: 400px;
+    height: 400px;
+}
+
+#mainContainerLogin {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    width: 300px;
+    height: 160px;
 }
 
 #uploadFormDiv {
-    width: 500px;
     height: 200px;
-    margin-top: 10vw;
-    background-color: #DDDDDD;
     justify-items: center;
 }
 
 #uploadForm {
-    display: flex;
-    margin-top: 3vw;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    outline: none;
 }
 
 #status {
     text-align: center;
+}
+
+#showStatsDiv {
+    height: 200px;
+    justify-items: center;
 }

@@ -1,4 +1,5 @@
-import jakarta.servlet.annotation.WebServlet;
+package com.github.kurbatov.weather;
+
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,8 +12,11 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-@WebServlet("/weather-api")
 public class WeatherServlet extends HttpServlet {
 
     private static final JedisPool jedisPool = new JedisPool("localhost", 6379);
@@ -50,7 +54,7 @@ public class WeatherServlet extends HttpServlet {
                     );
                     System.out.println("DEBUG: Запрос погоды -> " + weatherUrl);
                     finalJson = makeHttpRequest(weatherUrl);
-
+                    finalJson = replace(finalJson);
                     jedis.setex(cacheKey, 900, finalJson);
                 } else {
                     resp.sendError(HttpServletResponse.SC_NOT_FOUND, "City not found");
@@ -59,6 +63,8 @@ public class WeatherServlet extends HttpServlet {
             } else {
                 System.out.println("Данные получены из Redis для: " + city);
             }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
         resp.setContentType("application/json;charset=UTF-8");
@@ -86,5 +92,17 @@ public class WeatherServlet extends HttpServlet {
         int end = json.indexOf(",", start);
         if (end == -1) end = json.indexOf("}", start);
         return Double.parseDouble(json.substring(start, end));
+    }
+    private String replace(String node) {
+        Pattern pattern = Pattern.compile("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}");
+        Matcher matcher = pattern.matcher(node);
+
+        DateTimeFormatter isoFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+
+        String result = matcher.replaceAll(mr -> {
+            LocalDateTime dt = LocalDateTime.parse(mr.group(), isoFormat);
+            return dt.plusHours(3).format(isoFormat);
+        });
+        return result;
     }
 }

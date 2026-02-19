@@ -45,7 +45,7 @@
         }
 
         try {
-            const response = await fetch(`weather-api?city=${encodeURIComponent(city)}`);
+            const response = await fetch(`weather?city=${encodeURIComponent(city)}`);
             if (!response.ok) throw new Error("Server error");
 
             const data = await response.json();
@@ -58,7 +58,7 @@
             console.log("Данные получены:", data);
 
             document.getElementById('cityName').innerText = city.toUpperCase();
-            const tempNow = data.hourly.temperature_2m;
+            const tempNow = data.hourly.temperature_2m[0];
             document.getElementById('currentTemp').innerText = Math.round(tempNow) + "°C";
 
             renderChart(data.hourly.time, data.hourly.temperature_2m);

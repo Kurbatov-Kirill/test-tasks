@@ -1,5 +1,6 @@
 import java.util.*;
 
+// Класс с основной логикой
 public class Session {
     private int tubesAmount;
     private int tubesVolume;
@@ -8,19 +9,16 @@ public class Session {
     List<State> states = new ArrayList<>();
     private final List<int[]> steps = new ArrayList<>();
     private final List<List<int[]>> blockingHistory = new ArrayList<>();
-
     /*===========================================*/
-
     public void start() {
-        initStartCondition(receiveInitData());
-        while (!sortSucceeded()) {
+        initStartCondition(receiveInitData());  // инициализируем начальное состояние, исходя из введенных данных
+        while (!sortSucceeded()) {              // пытаемся найти решение, пока не отсортируем
             makeTransfer();
         }
-        printSuccess();
+        printSuccess();                         // в случае успеха печатаем итоговую последовательност ходов
     }
-
     /*===========================================*/
-
+    // Получаем данные для построения начального состояния
     private boolean receiveInitData() {
         boolean autolaunchMode = false;
         Scanner input = new Scanner(System.in);
@@ -29,6 +27,7 @@ public class Session {
         System.out.println("1: Да");
         System.out.println("2: Нет");
 
+        //  Если выбрано автозаполнение (для экономии времени проверки)
         if (input.hasNextInt()) {
             int inputNum = input.nextInt();
             if (inputNum == 1) {
@@ -64,6 +63,7 @@ public class Session {
                 tubesVolume = 4;
 
                 autolaunchMode = true;
+                //  Если выбран ручной ввод
             } else if (inputNum == 2) {
                 System.out.print("Введите объём одной пробирки: ");
                 int v = input.nextInt();    // объём одной пробирки
@@ -75,12 +75,14 @@ public class Session {
                 tubesVolume = v;
             }
         }
+        //  Вывод справки по начальному состоянию
         System.out.print(tubesAmount + ": пробирок\n");
         System.out.print(tubesVolume + ": объём\n");
         System.out.print(dropsVariety + ": видов\n");
         return autolaunchMode;
     }
 
+    //  Обработка введённых данных, создание и заполнение пробирок
     private void initStartCondition(boolean autolaunch) {
         if (!autolaunch) {
             Scanner input = new Scanner(System.in);
@@ -110,6 +112,7 @@ public class Session {
         printState("=========");
     }
 
+    // Пытаемся получить верхнюю/верхние капли из пробирки
     private List<Drop> pickDropsToTransfer(int tubeIndex) {
         List<Drop> dropsToTransfer = new ArrayList<>();
 
@@ -135,13 +138,13 @@ public class Session {
         return dropsToTransfer;
     }
 
+    // Смотрим, куда выбранные капли могут быть перелиты
     private int pickTubeToDeliver(int originalTubeIndex, List<Drop> dropsToTransfer) {
         int destinationTubeIndex = -1;
 
         for (int i = 0; i < currentState.getCurrentState().size(); i++) {
 
             Tube tube = currentState.getCurrentState().get(i);
-            tube.setVolume(tubesVolume);
             if (!tube.hasLiquid()) {
                 destinationTubeIndex = i;
                 break;
@@ -158,8 +161,11 @@ public class Session {
         return destinationTubeIndex;
     }
 
+    // Выполняем перенос капель
     private void makeTransfer() {
+        // Берём пробирку k
         for (int k = 0; k < tubesAmount; k++) {
+            //  и выполняем перенос
             if (executeTransfer(k)) {
                 states.add(new State(currentState));
                 return;
@@ -189,21 +195,30 @@ public class Session {
         }
     }
 
+    // Перенос капли/капель
     private boolean executeTransfer(int departureTubeIndex) {
+        // Получаем массив собранных капель
         List<Drop> dropsToTransfer = pickDropsToTransfer(departureTubeIndex);
 
+        // Если массив не пуст, продолжаем
         if (!dropsToTransfer.isEmpty()) {
+            // Вычисляем, куда можно поместить выбранные капли
             int destinationTubeIndex = pickTubeToDeliver(departureTubeIndex, dropsToTransfer);
 
+            // Если нет известных тупиковых состояний, то продолжаем
             if (!blockingHistory.isEmpty()) {
+                // Записываем потенциальный текущий хода
                 int[] currentStep = new int[]{departureTubeIndex, destinationTubeIndex};
                 int currentStepIndex = steps.size() - 1;
+                // Если в истории тупиков есть данные для текущего шага (у этого хода были безысходные ситуации)
                 if (!blockingHistory.get(currentStepIndex).isEmpty()) {
                     List<int[]> currentBlockedStatesList;
-
+                    // Получаем список тупиковых вариантов
                     currentBlockedStatesList = blockingHistory.get(currentStepIndex);
 
+                    // Смотрим, есть ли в списке тот, который собираемся сделать
                     for (int[] step: currentBlockedStatesList) {
+                        // Если да, то прерываем перенос как неудавшийся
                         if (Arrays.equals(step, currentStep)) {
                             return false;
                         }
@@ -211,12 +226,15 @@ public class Session {
                 }
             }
 
+            // Если тупиковых состояний нет/есть, но текущий ход не был найден в списке тупиков
+            // Проверяем, получилось ли найти пробирку, в которую возможен перенос
             if (destinationTubeIndex >= 0) {
                 Tube tubeToPick = currentState.getCurrentState().get(departureTubeIndex);
                 Tube tubeToFill = currentState.getCurrentState().get(destinationTubeIndex);
                 List<Drop> modifiedContentsOfOriginalTube = tubeToPick.getContents();
                 int x = Math.min(tubeToFill.getFreeCells(), dropsToTransfer.size());
 
+                // Переносим капли
                 for (int i = 0; i < x; i++) {
                     modifiedContentsOfOriginalTube.remove(modifiedContentsOfOriginalTube.getLast());
                     tubeToFill.getContents().add(dropsToTransfer.getLast());
@@ -229,18 +247,20 @@ public class Session {
                 currentState = new State(currentState);
                 printState(" " + departureTubeIndex + " >> " + destinationTubeIndex + " ");
 
+                // Записываем ход как успешный
                 steps.add(new int[]{departureTubeIndex, destinationTubeIndex});
 
                 if (steps.size() != blockingHistory.size()) {
                     blockingHistory.add(new ArrayList<>());
                 }
-
                 return true;
             }
         }
+        // Выходим с неудачей, если в пробирке не нашлось капель для переноса
         return false;
     }
 
+    // Откат, на случай, если текущая цепочка ходов привела к тупику
     private void rollback() {
         List<int[]> currentBlockedSteps;
         int currentStepIndex = steps.size() - 2;
@@ -253,12 +273,12 @@ public class Session {
         currentState = states.getLast();
     }
 
+    // Проверка, отсортированы ли все пробирки
     private boolean sortSucceeded() {
         List<Tube> sortedTubes = new ArrayList<>();
         int amountOfSortedTubes;
         for (int i = 0; i < tubesAmount; i++) {
             Tube tube = currentState.getCurrentState().get(i);
-            tube.setVolume(tubesVolume);
 
             if (!(tube.getContents().isEmpty())) {
                 if (tube.isSorted()) {
@@ -270,6 +290,7 @@ public class Session {
         return amountOfSortedTubes == dropsVariety;
     }
 
+    // Вывод итоговой последовательности ходов
     private void printSuccess() {
         System.out.println("Решение найдено!");
         System.out.println("Ходов: " + steps.size());

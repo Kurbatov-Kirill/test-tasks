@@ -1,17 +1,30 @@
-import java.io.File;
+package com.github.kurbatov.filehoster.config;
+
+import java.io.*;
 import java.nio.file.Files;
 import java.sql.*;
+import java.util.Properties;
 
+// Класс для основных операций с БД
 public class DatabaseConfig {
-    public static Connection getConnection() throws SQLException {
-        String url = "jdbc:postgresql://localhost:5432/postgres";
-        String user = "postgres";
-        String password = "qwedsazxc";
+    public static Connection getConnection() throws SQLException, IOException {
+        Properties props = new Properties();
 
-        return DriverManager.getConnection(url, user, password);
+        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("db.properties")) {
+            if (is == null) {
+                throw new FileNotFoundException("Файл не найден в classpath");
+            }
+            props.load(is);
+        }
+        String dbUrl = props.getProperty("db.url");
+        String dbUser = props.getProperty("db.user");
+        String dbPass = props.getProperty("db.password");
+
+        return DriverManager.getConnection(dbUrl, dbUser, dbPass);
     }
 
-    public static void saveFileInfo(String originalName, String savedName, int viewsCount, int downloadsCount) {
+    // Сохранение информации о загруженном файле
+    public void saveFileInfo(String originalName, String savedName, int viewsCount, int downloadsCount) {
         String sql = "INSERT INTO uploaded_files (original_name, saved_name, views_count, downloads_count) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = getConnection();
@@ -29,6 +42,7 @@ public class DatabaseConfig {
         }
     }
 
+    // Удаление файлов, которые не скачивали более 30 дней
     public static void cleanOldFiles() {
         String selectSql = "SELECT saved_name FROM uploaded_files WHERE last_download_at < NOW() - INTERVAL '30 days'";
         String deleteSql = "DELETE FROM uploaded_files WHERE last_download_at < NOW() - INTERVAL '30 days'";
@@ -54,14 +68,14 @@ public class DatabaseConfig {
             e.printStackTrace();
         }
     }
-
+    // Обновление даты последнего скачивания
     public static void updateLastDownloadDate(String savedName) {
         String sql = "UPDATE uploaded_files SET last_download_at = NOW() WHERE saved_name = ?";
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, savedName);
             pstmt.executeUpdate();
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             e.printStackTrace();
         }
     }

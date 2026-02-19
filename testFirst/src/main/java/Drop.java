@@ -1,6 +1,6 @@
 public class Drop {
     private int colorId;
-
+    /*===========================================*/
     public Drop() {
         
     }
@@ -8,7 +8,7 @@ public class Drop {
     public Drop(Drop other) {
         this.colorId = other.colorId;
     }
-
+    /*===========================================*/
     public int getColorId() {
         return colorId;
     }

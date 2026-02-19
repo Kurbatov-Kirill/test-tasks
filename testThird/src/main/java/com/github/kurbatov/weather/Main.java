@@ -1,3 +1,5 @@
+package com.github.kurbatov.weather;
+
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.api.model.PortBinding;
@@ -74,13 +76,15 @@ public class Main {
         String webappDir = new File("src/main/webapp").getAbsolutePath();
         Context context = tomcat.addWebapp("", webappDir);
 
-        Tomcat.addServlet(context, "WeatherServlet", new WeatherServlet());
-        context.addServletMappingDecoded("/weather-api", "WeatherServlet");
+        Tomcat.addServlet(context, "com.github.kurbatov.weather.WeatherServlet", new WeatherServlet());
+        context.addServletMappingDecoded("/weather", "com.github.kurbatov.weather.WeatherServlet");
 
         System.out.println("\n========================================");
         System.out.println("Приложение запущено: http://localhost:8080");
         System.out.println("========================================\n");
 
+        tomcat.getConnector().setURIEncoding("UTF-8");
+        context.addParameter("org.apache.catalina.filters.SetCharacterEncodingFilter.encoding", "UTF-8");
         tomcat.start();
         tomcat.getServer().await();
     }

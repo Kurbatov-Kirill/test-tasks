@@ -2,15 +2,17 @@
 <meta charset="UTF-8">
 <head>
     <title>Регистрация</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<h2>Создать аккаунт</h2>
-<form action="do-register" method="POST">
-    <input type="text" name="username" placeholder="Придумайте логин" required>
-    <input type="password" name="password" placeholder="Придумайте пароль" required>
-    <button type="submit">Создать аккаунт</button>
-</form>
-<br>
-<a href="login.html">Уже есть аккаунт? Войти</a>
+    <div id="mainContainerLogin">
+        <p style="margin-top: unset"><b>Создать аккаунт</b></p>
+        <form action="do-register" method="POST" style="text-align: center;">
+            <input type="text" name="username" placeholder="Придумайте логин" style="width: 100%;" required>
+            <input type="password" name="password" placeholder="Придумайте пароль" required style="width: 100%;">
+            <button type="submit" style="margin: 10px; width: 150px">Создать аккаунт</button>
+        </form>
+        <div style="display: flex; justify-content: space-evenly;"><p>Уже есть аккаунт?</p><p><a href="login.html">Войти</a></p></div>
+    </div>
 </body>
 </html>

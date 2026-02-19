@@ -1,3 +1,9 @@
+package com.github.kurbatov.filehoster.services;
+
+import com.github.kurbatov.filehoster.classes.Stats;
+import com.github.kurbatov.filehoster.config.DatabaseConfig;
+
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -5,17 +11,19 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+// Сервис обработки статистики
 public class StatisticsService {
 
     public StatisticsService() throws SQLException {
     }
 
+    // Получить всю стату
     Stats getStats(String fileId) {
         String sql = "SELECT * FROM uploaded_files WHERE (saved_name = ?)";
         Stats stats = new Stats();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
         try (Connection conn = DatabaseConfig.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, fileId);
             try (ResultSet rs = pstmt.executeQuery()) {
@@ -40,6 +48,7 @@ public class StatisticsService {
                     stats.setDisplayingUploadTime(formattedUploadTime);
                 }
             }
+            // Сразу повышаем счётчик просмотров
             sql = "UPDATE uploaded_files SET views_count = ? WHERE saved_name = ?";
             PreparedStatement pstmt2 = conn.prepareStatement(sql);
 
@@ -54,13 +63,14 @@ public class StatisticsService {
         return stats;
     }
 
+    // Для повышения счётчика загрузок
     public void incrementDownloads(String fileId) {
         String sql = "UPDATE uploaded_files SET downloads_count = downloads_count + 1 WHERE saved_name = ?";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, fileId);
             pstmt.executeUpdate();
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             e.printStackTrace();
         }
     }

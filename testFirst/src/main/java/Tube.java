@@ -4,9 +4,7 @@ import java.util.List;
 public class Tube {
     private int volume;
     private List<Drop> contents = new ArrayList<>();
-
     /*===========================================*/
-
     public Tube() {
     }
 
@@ -18,13 +16,7 @@ public class Tube {
             this.contents.add(new Drop(drop));
         }
     }
-
     /*===========================================*/
-
-    public int getVolume() {
-        return volume;
-    }
-
     public void setVolume(int volume) {
         this.volume = volume;
     }

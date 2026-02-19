@@ -1,9 +1,19 @@
 <html>
 <meta charset="UTF-8">
-<form method="POST" action="j_security_check">
-    <input type="text" name="j_username" placeholder="Логин">
-    <input type="password" name="j_password" placeholder="Пароль">
-    <input type="submit" value="Войти">
-</form>
-<p>Нет аккаунта? <a href="register.html">Зарегистрироваться</a></p>
+<head>
+    <title>Вход</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="mainContainerLogin">
+        <p style="margin-top: unset"><b>Вход</b></p>
+        <form method="POST" action="j_security_check" style="text-align: center;">
+            <input type="text" name="j_username" placeholder="Логин" style="width: 100%;">
+            <input type="password" name="j_password" placeholder="Пароль" style="width: 100%;">
+            <input type="submit" value="Войти" style="margin: 10px; width: 150px">
+        </form>
+        <div style="display: flex; justify-content: space-evenly;"><p>Нет аккаунта?</p><p><a href="register.html">Зарегистрироваться</a></p></div>
+    </div>
+</body>
+
 </html>

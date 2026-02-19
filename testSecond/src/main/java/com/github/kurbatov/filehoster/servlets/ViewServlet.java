@@ -1,5 +1,6 @@
+package com.github.kurbatov.filehoster.servlets;
+
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -7,11 +8,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
 
-@WebServlet("/view")
+// Сервлет для отображения странички со статистикой по файлу, который хотят скачать
 public class ViewServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String fileId = request.getParameter("id");
         StatisticsService statsService;
+
         try {
             statsService = new StatisticsService();
         } catch (SQLException e) {
