@@ -1,3 +1,5 @@
+package com.github.kurbatov.sorter.classes;
+
 public class Drop {
     private int colorId;
     /*===========================================*/

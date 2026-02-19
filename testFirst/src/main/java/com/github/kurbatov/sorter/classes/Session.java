@@ -1,3 +1,5 @@
+package com.github.kurbatov.sorter.classes;
+
 import java.util.*;
 
 // Класс с основной логикой
