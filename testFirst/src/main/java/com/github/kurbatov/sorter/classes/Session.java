@@ -147,9 +147,12 @@ public class Session {
         for (int i = 0; i < currentState.getCurrentState().size(); i++) {
 
             Tube tube = currentState.getCurrentState().get(i);
+            Tube fromTube = currentState.getCurrentState().get(originalTubeIndex);
             if (!tube.hasLiquid()) {
-                destinationTubeIndex = i;
-                break;
+                if (fromTube.getContents().size() > 1) {
+                    destinationTubeIndex = i;
+                    break;
+                }
             } else if (
                     tube.hasFreeSpace() &&
                             (tube.getTopDrop().getColorId() == dropsToTransfer.getLast().getColorId()) &&
