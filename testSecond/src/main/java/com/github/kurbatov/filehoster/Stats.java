@@ -1,4 +1,4 @@
-package com.github.kurbatov.filehoster.classes;
+package com.github.kurbatov.filehoster;
 
 import java.time.LocalDateTime;
 

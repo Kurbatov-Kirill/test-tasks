@@ -1,6 +1,6 @@
 package com.github.kurbatov.filehoster.services;
 
-import com.github.kurbatov.filehoster.classes.Stats;
+import com.github.kurbatov.filehoster.Stats;
 import com.github.kurbatov.filehoster.config.DatabaseConfig;
 
 import java.io.IOException;

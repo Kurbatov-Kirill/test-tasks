@@ -40,6 +40,7 @@ public class Main {
         File webappDir = new File(webappDirLocation);
 
         Context ctx = tomcat.addWebapp("", webappDir.getAbsolutePath());
+        ctx.setParentClassLoader(Main.class.getClassLoader());
 
         // Получаем данные для подключения к БД из файла properties, настраиваем взаимодействие и подключение к БД
         Properties props = new Properties();
