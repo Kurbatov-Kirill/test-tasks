@@ -1,11 +1,26 @@
+body {
+    background-color: #333333;
+}
+
+#mainContainer {
+    display: flex;
+    justify-content: center;
+
+}
+
 #uploadFormDiv {
-    width: 30px;
-    color: crimson;
-    height: 600px;
+    width: 500px;
+    height: 200px;
+    margin-top: 10vw;
+    background-color: #DDDDDD;
+    justify-items: center;
 }
 
 #uploadForm {
     display: flex;
-    color: crimson;
-    height: 600px;
+    margin-top: 3vw;
+}
+
+#status {
+    text-align: center;
 }

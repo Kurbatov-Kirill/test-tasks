@@ -11,14 +11,16 @@ public class DatabaseConfig {
         return DriverManager.getConnection(url, user, password);
     }
 
-    public static void saveFileInfo(String originalName, String savedName) {
-        String sql = "INSERT INTO uploaded_files (original_name, saved_name) VALUES (?, ?)";
+    public static void saveFileInfo(String originalName, String savedName, int viewsCount, int downloadsCount) {
+        String sql = "INSERT INTO uploaded_files (original_name, saved_name, views_count, downloads_count) VALUES (?, ?, ?, ?)";
 
-        try (Connection conn = getConnection(); // Используем ваш метод подключения
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, originalName);
             pstmt.setString(2, savedName);
+            pstmt.setInt(3, viewsCount);
+            pstmt.setInt(4, downloadsCount);
             pstmt.executeUpdate();
             System.out.println("Данные файла сохранены в БД");
 
@@ -40,12 +42,12 @@ public class DatabaseConfig {
                 String fileName = rs.getString("saved_name");
                 File file = new File(uploadPath + File.separator + fileName);
                 if (file.exists()) {
-                    Files.delete(file.toPath()); // Удаляем физический файл
+                    Files.delete(file.toPath());
                     System.out.println("Удален старый файл: " + fileName);
                 }
             }
 
-            int deletedRows = stmt.executeUpdate(deleteSql); // Удаляем записи из БД
+            int deletedRows = stmt.executeUpdate(deleteSql);
             System.out.println("Удалено записей из БД: " + deletedRows);
 
         } catch (Exception e) {

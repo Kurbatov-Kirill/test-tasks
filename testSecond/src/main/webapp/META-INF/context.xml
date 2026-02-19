@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <Resource name="jdbc/UserDB"
+              auth="Container"
+              type="javax.sql.DataSource"
+              driverClassName="org.postgresql.Driver"
+              url="jdbc:postgresql://localhost:5432/postgres?useSSL=false&amp;serverTimezone=UTC"
+              username="postgres"
+              password="qwedsazxc"
+              maxTotal="20"
+              maxIdle="10"
+              maxWaitMillis="-1"/>
+
+    <Realm className="org.apache.catalina.realm.DataSourceRealm"
+           dataSourceName="jdbc/UsersDB"
+           userTable="usrs" userNameCol="username" userCredCol="password"
+           userRoleTable="user_roles" roleNameCol="role_name" />
+
+        <CredentialHandler className="org.apache.catalina.realm.MessageDigestCredentialHandler"
+                           algorithm="SHA-256"
+                           encoding="UTF-8" />
+</Context>
+

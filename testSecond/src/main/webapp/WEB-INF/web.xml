@@ -2,6 +2,36 @@
  "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
+
 <web-app>
-  <display-name>Archetype Created Web Application</display-name>
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Protected Area</web-resource-name>
+            <url-pattern>/index.html</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>USER</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Public Area</web-resource-name>
+            <url-pattern>/login.html</url-pattern>
+            <url-pattern>/register.html</url-pattern>
+            <url-pattern>/do-register</url-pattern>
+            <url-pattern>/j_security_check</url-pattern>
+        </web-resource-collection>
+    </security-constraint>
+
+    <login-config>
+        <auth-method>FORM</auth-method>
+        <form-login-config>
+            <form-login-page>/login.html</form-login-page>
+            <form-error-page>/login.html?error=1</form-error-page>
+        </form-login-config>
+    </login-config>
+
+    <security-role><role-name>USER</role-name></security-role>
 </web-app>
+

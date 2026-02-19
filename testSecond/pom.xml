@@ -28,8 +28,32 @@
           <version>42.7.10</version>
           <scope>compile</scope>
       </dependency>
+      <!-- Source: https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-dbcp -->
+      <dependency>
+          <groupId>org.apache.tomcat</groupId>
+          <artifactId>tomcat-dbcp</artifactId>
+          <version>11.0.18</version>
+          <scope>compile</scope>
+      </dependency>
+      <!-- Source: https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-jasper -->
+      <dependency>
+          <groupId>org.apache.tomcat.embed</groupId>
+          <artifactId>tomcat-embed-jasper</artifactId>
+          <version>11.0.18</version>
+          <scope>compile</scope>
+      </dependency>
   </dependencies>
   <build>
     <finalName>testSecond</finalName>
+      <plugins>
+          <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <configuration>
+                  <source>9</source>
+                  <target>9</target>
+              </configuration>
+          </plugin>
+      </plugins>
   </build>
 </project>
