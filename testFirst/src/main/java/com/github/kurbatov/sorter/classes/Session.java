@@ -17,7 +17,10 @@ public class Session {
         while (!sortSucceeded()) {              // пытаемся найти решение, пока не отсортируем
             makeTransfer();
         }
-        printSuccess();                         // в случае успеха печатаем итоговую последовательност ходов
+        if (sortSucceeded()) {
+            printSuccess();                     // в случае успеха печатаем итоговую последовательност ходов
+        }
+        else System.out.println("Решение не найдено");
     }
     /*===========================================*/
     // Получаем данные для построения начального состояния
@@ -207,55 +210,60 @@ public class Session {
             // Вычисляем, куда можно поместить выбранные капли
             int destinationTubeIndex = pickTubeToDeliver(departureTubeIndex, dropsToTransfer);
 
-            // Если нет известных тупиковых состояний, то продолжаем
-            if (!blockingHistory.isEmpty()) {
-                // Записываем потенциальный текущий хода
-                int[] currentStep = new int[]{departureTubeIndex, destinationTubeIndex};
-                int currentStepIndex = steps.size() - 1;
-                // Если в истории тупиков есть данные для текущего шага (у этого хода были безысходные ситуации)
-                if (!blockingHistory.get(currentStepIndex).isEmpty()) {
-                    List<int[]> currentBlockedStatesList;
-                    // Получаем список тупиковых вариантов
-                    currentBlockedStatesList = blockingHistory.get(currentStepIndex);
+            // Если последний шаг не является обратным предыдущему
+            if (!lastStepDuplicated(departureTubeIndex, destinationTubeIndex)) {
+                // Если нет известных тупиковых состояний, то продолжаем
+                if (!blockingHistory.isEmpty()) {
+                    // Записываем потенциальный текущий хода
+                    int[] currentStep = new int[]{departureTubeIndex, destinationTubeIndex};
+                    int currentStepIndex = steps.size() - 1;
+                    // Если в истории тупиков есть данные для текущего шага (у этого хода были безысходные ситуации)
+                    if (!blockingHistory.get(currentStepIndex).isEmpty() && steps.stream().noneMatch(arr -> Arrays.equals(arr, currentStep))) {
+                        List<int[]> currentBlockedStatesList;
+                        // Получаем список тупиковых вариантов
+                        currentBlockedStatesList = blockingHistory.get(currentStepIndex);
 
-                    // Смотрим, есть ли в списке тот, который собираемся сделать
-                    for (int[] step: currentBlockedStatesList) {
-                        // Если да, то прерываем перенос как неудавшийся
-                        if (Arrays.equals(step, currentStep)) {
-                            return false;
+                        // Смотрим, есть ли в списке тот, который собираемся сделать
+                        for (int[] step: currentBlockedStatesList) {
+                            // Если да, то прерываем перенос как неудавшийся
+                            if (Arrays.equals(step, currentStep)) {
+                                return false;
+                            }
                         }
                     }
                 }
-            }
 
-            // Если тупиковых состояний нет/есть, но текущий ход не был найден в списке тупиков
-            // Проверяем, получилось ли найти пробирку, в которую возможен перенос
-            if (destinationTubeIndex >= 0) {
-                Tube tubeToPick = currentState.getCurrentState().get(departureTubeIndex);
-                Tube tubeToFill = currentState.getCurrentState().get(destinationTubeIndex);
-                List<Drop> modifiedContentsOfOriginalTube = tubeToPick.getContents();
-                int x = Math.min(tubeToFill.getFreeCells(), dropsToTransfer.size());
+                // Если тупиковых состояний нет/есть, но текущий ход не был найден в списке тупиков
+                // Проверяем, получилось ли найти пробирку, в которую возможен перенос
+                if (destinationTubeIndex >= 0) {
+                    Tube tubeToPick = currentState.getCurrentState().get(departureTubeIndex);
+                    Tube tubeToFill = currentState.getCurrentState().get(destinationTubeIndex);
+                    List<Drop> modifiedContentsOfOriginalTube = tubeToPick.getContents();
+                    int x = Math.min(tubeToFill.getFreeCells(), dropsToTransfer.size());
 
-                // Переносим капли
-                for (int i = 0; i < x; i++) {
-                    modifiedContentsOfOriginalTube.remove(modifiedContentsOfOriginalTube.getLast());
-                    tubeToFill.getContents().add(dropsToTransfer.getLast());
-                    dropsToTransfer.remove(dropsToTransfer.getLast());
+                    // Переносим капли
+                    for (int i = 0; i < x; i++) {
+                        modifiedContentsOfOriginalTube.remove(modifiedContentsOfOriginalTube.getLast());
+                        tubeToFill.getContents().add(dropsToTransfer.getLast());
+                        dropsToTransfer.remove(dropsToTransfer.getLast());
+                    }
+
+                    tubeToPick.setContents(modifiedContentsOfOriginalTube);
+                    currentState.getCurrentState().set(departureTubeIndex, new Tube(tubeToPick));
+
+                    currentState = new State(currentState);
+                    printState(" " + departureTubeIndex + " >> " + destinationTubeIndex + " ");
+
+                    // Записываем ход как успешный
+                    steps.add(new int[]{departureTubeIndex, destinationTubeIndex});
+
+                    if (steps.size() != blockingHistory.size()) {
+                        blockingHistory.add(new ArrayList<>());
+                    }
+                    return true;
                 }
-
-                tubeToPick.setContents(modifiedContentsOfOriginalTube);
-                currentState.getCurrentState().set(departureTubeIndex, new Tube(tubeToPick));
-
-                currentState = new State(currentState);
-                printState(" " + departureTubeIndex + " >> " + destinationTubeIndex + " ");
-
-                // Записываем ход как успешный
-                steps.add(new int[]{departureTubeIndex, destinationTubeIndex});
-
-                if (steps.size() != blockingHistory.size()) {
-                    blockingHistory.add(new ArrayList<>());
-                }
-                return true;
+            } else {
+               return false;
             }
         }
         // Выходим с неудачей, если в пробирке не нашлось капель для переноса
@@ -290,6 +298,19 @@ public class Session {
         }
         amountOfSortedTubes = sortedTubes.size();
         return amountOfSortedTubes == dropsVariety;
+    }
+
+    private boolean lastStepDuplicated(int departureTube, int currentDestination) {
+        boolean duplicated = false;
+        int[] lastStep;
+
+        if (!steps.isEmpty()) {
+            lastStep = steps.getLast();
+            if ((lastStep[0] == currentDestination) && (departureTube == lastStep[1])) {
+                duplicated = true;
+            }
+        }
+        return duplicated;
     }
 
     // Вывод итоговой последовательности ходов
