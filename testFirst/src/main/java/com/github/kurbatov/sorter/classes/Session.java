@@ -17,7 +17,8 @@ public class Session {
         while (!sortSucceeded()) {              // пытаемся найти решение, пока не отсортируем
             makeTransfer();
         }
-        printSuccess();                         // в случае успеха печатаем итоговую последовательност ходов
+        printSuccess();
+                                 // в случае успеха печатаем итоговую последовательност ходов
     }
     /*===========================================*/
     // Получаем данные для построения начального состояния
@@ -177,9 +178,10 @@ public class Session {
             }
         }
 
-        if (!steps.isEmpty() && !states.isEmpty()) {
+        if ((steps.size() > 1) && !states.isEmpty()) {
             rollback();
         } else {
+            System.out.println("Решение не найдено");
             System.exit(0);
         }
     }
